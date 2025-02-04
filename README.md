@@ -20,7 +20,17 @@
 
 К каждой функции добавлено ее описание и необходимые ей параметры.
 
+### fix_marks
+
 ![image](https://github.com/user-attachments/assets/bc1e59df-ad23-4ed6-b12f-6c901e2c3391)
+
+### remove_chastisements
+
+![image](https://github.com/user-attachments/assets/2b6fae31-e6ab-466e-88ba-bf03e7c09027)
+
+### create_commendation
+
+![image](https://github.com/user-attachments/assets/02c78c41-4a94-4b67-92ad-17b57bc3c896)
 
 Терминале вводим `python manage.py shell`. Таким образом попадаем в консоль.
 
