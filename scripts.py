@@ -25,10 +25,8 @@ def fix_marks(child):
     except Schoolkid.MultipleObjectsReturned:
         print('Найдено больше одной записи')
         return
-    for _ in range(0, Mark.objects.filter(schoolkid=child, points__in=[2, 3]).count()):
-        new_point = Mark.objects.filter(schoolkid = child, points__in=[2,3]).first()
-        new_point.points = 5
-        new_point.save()
+    new_point = Mark.objects.filter(schoolkid = child, points__in=[2,3])
+    new_point.update(points = 5)
     return
 
 
