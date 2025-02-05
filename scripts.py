@@ -6,10 +6,9 @@ from datacenter.models import Lesson
 from datacenter.models import Mark
 from datacenter.models import Schoolkid
 
-
 PRAISE = [
-        'Отлично!',
         'Молодец!',
+        'Отлично!',
         'Хорошо!',
         'Гораздо лучше, чем я ожидал!',
         'Ты меня приятно удивил!',
@@ -41,6 +40,19 @@ PRAISE = [
     ]
 
 
+def find_schoolkid(child):
+    """Искать ученика в базе данных"""
+    try:
+        schoolkid = Schoolkid.objects.get(full_name__contains=child)
+    except Schoolkid.DoesNotExist:
+        print('Записей не найдено')
+        return
+    except Schoolkid.MultipleObjectsReturned:
+        print('Найдено больше одной записи')
+        return
+    return schoolkid
+
+
 def fix_marks(child):
     """Изменить оценки с двоек и троек на пятерки.
 
@@ -51,15 +63,8 @@ def fix_marks(child):
         На сайте меняются оценки.
         Если количество найденных учеников отличается от одного, то выходит соответствующее уведомление.
     """
-    try:
-        child = Schoolkid.objects.get(full_name__contains = child)
-    except Schoolkid.DoesNotExist:
-        print('Записей не найдено')
-        return
-    except Schoolkid.MultipleObjectsReturned:
-        print('Найдено больше одной записи')
-        return
-    Mark.objects.filter(schoolkid = child, points__in=[2,3]).update(points = 5)
+    schoolkid = find_schoolkid(child)
+    Mark.objects.filter(schoolkid=schoolkid, points__in=[2, 3]).update(points=5)
     return
 
 
@@ -73,15 +78,8 @@ def remove_chastisements(child):
         На сайте удаляются все записи с замечаниями ученика.
         Если количество найденных учеников отличается от одного, то выходит соответствующее уведомление.
     """
-    try:
-        child = Schoolkid.objects.get(full_name__contains = child)
-    except Schoolkid.DoesNotExist:
-        print('Записей не найдено')
-        return
-    except Schoolkid.MultipleObjectsReturned:
-        print('Найдено больше одной записи')
-        return
-    Chastisement.objects.filter(schoolkid = child).delete()
+    schoolkid = find_schoolkid(child)
+    Chastisement.objects.filter(schoolkid=schoolkid).delete()
     return
 
 
@@ -97,17 +95,10 @@ def create_commendation(child, subject):
         Если количество найденных учеников отличается от одного, то выходит соответствующее уведомление.
         Если название предмета указано неверно, то выходит соответствующее уведомление.
     """
-    try:
-        child = Schoolkid.objects.get(full_name__contains = child)
-    except Schoolkid.DoesNotExist:
-        print('Записей не найдено')
-        return
-    except Schoolkid.MultipleObjectsReturned:
-        print('Найдено больше одной записи')
-        return
-    lesson_date = Lesson.objects.filter(year_of_study=child.year_of_study, group_letter=child.group_letter, subject__title=subject).last()
+    schoolkid = find_schoolkid(child)
+    lesson_date = Lesson.objects.filter(year_of_study=schoolkid.year_of_study, group_letter=schoolkid.group_letter, subject__title=subject).last()
     if not lesson_date:
         raise AttributeError('Название урока введено некорректно')
-    text = choice(PRAISE )
-    Commendation.objects.create(text=text, created=lesson_date.date, schoolkid=child, subject=lesson_date.subject, teacher=lesson_date.teacher)
+    text = choice(PRAISE)
+    Commendation.objects.create(text=text, created=lesson_date.date, schoolkid=schoolkid, subject=lesson_date.subject, teacher=lesson_date.teacher)
     return
