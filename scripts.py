@@ -59,8 +59,7 @@ def fix_marks(child):
     except Schoolkid.MultipleObjectsReturned:
         print('Найдено больше одной записи')
         return
-    new_point = Mark.objects.filter(schoolkid = child, points__in=[2,3])
-    new_point.update(points = 5)
+    Mark.objects.filter(schoolkid = child, points__in=[2,3]).update(points = 5)
     return
 
 
@@ -82,8 +81,7 @@ def remove_chastisements(child):
     except Schoolkid.MultipleObjectsReturned:
         print('Найдено больше одной записи')
         return
-    chastisement = Chastisement.objects.filter(schoolkid = child)
-    chastisement.delete()
+    Chastisement.objects.filter(schoolkid = child).delete()
     return
 
 
