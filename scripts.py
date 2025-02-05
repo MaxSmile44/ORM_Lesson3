@@ -74,9 +74,11 @@ def create_commendation(child, subject):
         print('Найдено больше одной записи')
         return
     lesson_date = Lesson.objects.filter(year_of_study=child.year_of_study, group_letter=child.group_letter, subject__title=subject).last()
+    if not lesson_date:
+        raise AttributeError('Название урока введено некорректно')
     praise = [
-        'Молодец!',
         'Отлично!',
+        'Молодец!',
         'Хорошо!',
         'Гораздо лучше, чем я ожидал!',
         'Ты меня приятно удивил!',
@@ -107,9 +109,5 @@ def create_commendation(child, subject):
         'Теперь у тебя точно все получится!'
     ]
     text = choice(praise)
-    try:
-        Commendation.objects.create(text=text, created=lesson_date.date, schoolkid=child, subject=lesson_date.subject, teacher=lesson_date.teacher)
-    except AttributeError:
-        print('Название урока введено некорректно')
-        return
+    Commendation.objects.create(text=text, created=lesson_date.date, schoolkid=child, subject=lesson_date.subject, teacher=lesson_date.teacher)
     return
